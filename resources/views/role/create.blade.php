@@ -102,12 +102,13 @@
                                     'Job Application Note',
                                     'Job Application Skill',
                                     'Custom Question',
-                                    'Interview
-                            Schedule',
+                                    'Interview Schedule',
                                     'Career',
                                     'Report',
                                     'Performance Type',
                                     'BG/PO/PG',
+                                    'Manage Invoice',
+
                                 ];
                                 if (Auth::user()->type == 'super admin') {
                                     $modules[] = 'Language';

@@ -33,7 +33,7 @@
 }
 
 
-.choose-files div { 
+.choose-files div {
     color: #fff;
     /* background: #584ED2 !important; */
     border: none;
@@ -272,7 +272,7 @@
 .active_color {
     border: 2px solid #000 !important;
 }
-  
+
 /* chat counter */
 .message-counter {
     position: absolute;
@@ -283,7 +283,7 @@
 width: 15px !important;
     text-align: center !important;
     color: #fff !important;
-}  
+}
 .dash-card{
     height: 200px !important;
 }
@@ -371,5 +371,48 @@ width: 15px !important;
 .table.modal-table td,
 .table.modal-table th {
     white-space: normal;
+}
+
+
+/* Invoice Specific Styles */
+.invoice-print {
+    background: #fff;
+    padding: 30px;
+}
+
+.invoice-title h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.invoice-number {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.invoice .table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.invoice .table-bordered td,
+.invoice .table-bordered th {
+    border: 1px solid #dee2e6;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+/* Print specific styles */
+@media print {
+    .invoice-print {
+        padding: 0;
+    }
+
+    .btn, .breadcrumb, .page-header {
+        display: none !important;
+    }
 }
 

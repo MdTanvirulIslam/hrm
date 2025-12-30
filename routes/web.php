@@ -79,6 +79,7 @@ use App\Http\Controllers\AllowanceOptionController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\PayslipTypeController;
 use App\Http\Controllers\BGPGController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -1345,3 +1346,11 @@ Route::any('/interview-schedule/get_interview-schedule_data', [InterviewSchedule
 Route::any('leave/get_leave_data', [LeaveController::class, 'get_leave_data'])->name('leave.get_leave_data')->middleware(['auth', 'XSS']);
 
 Route::any('/meeting/get_meeting_data', [MeetingController::class, 'get_meeting_data'])->name('meeting.get_meeting_data')->middleware(['auth', 'XSS']);
+
+Route::resource('invoice', InvoiceController::class);
+Route::get('invoice/{id}/pdf/{type}', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
+Route::post('invoice/get-sequence', [InvoiceController::class, 'getSequence'])->name('invoice.getSequence');
+Route::post('invoice/get-invoice-number', [InvoiceController::class, 'getInvoiceNumber'])->name('invoice.getInvoiceNumber');
+Route::middleware(['auth', 'XSS'])->group(function () {
+
+});
