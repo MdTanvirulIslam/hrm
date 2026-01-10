@@ -71,7 +71,7 @@
                                                         <th width="30%"><?php echo e(__('Product Description')); ?></th>
                                                         <th width="8%" class="text-center"><?php echo e(__('Qty')); ?></th>
                                                         <th width="12%" class="text-right"><?php echo e(__('Unit Price')); ?></th>
-                                                        <th width="10%" class="text-right"><?php echo e(__('VAT %')); ?></th>
+                                                        <th width="10%" class="text-right"><?php echo e(__('VAT 10%')); ?></th>
                                                         <th width="15%" class="text-right"><?php echo e(__('Total Price')); ?></th>
                                                     </tr>
                                                     </thead>
@@ -83,12 +83,10 @@
                                                             <td><?php echo nl2br(e($item->item_description)); ?></td>
                                                             <td class="text-center"><?php echo e($item->quantity); ?></td>
                                                             <td class="text-right">
-                                                                <?php echo e(number_format($item->unit_price, 2)); ?></td>
+                                                                <?php echo e(number_format($item->unit_price + $item->tax_amount, 2)); ?></td>
                                                             <td class="text-right">
-                                                                <?php echo e($item->vat_percentage); ?>%
-                                                                <?php if($item->vat_amount > 0): ?>
-                                                                    <br><small>(<?php echo e(number_format($item->vat_amount, 2)); ?> BDT)</small>
-                                                                <?php endif; ?>
+                                                                <?php echo e(number_format($item->vat_amount, 2)); ?>
+
                                                             </td>
                                                             <td class="text-right">
                                                                 <?php echo e(number_format($item->total_price, 2)); ?></td>

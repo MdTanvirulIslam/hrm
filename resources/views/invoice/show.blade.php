@@ -68,7 +68,7 @@
                                                         <th width="30%">{{ __('Product Description') }}</th>
                                                         <th width="8%" class="text-center">{{ __('Qty') }}</th>
                                                         <th width="12%" class="text-right">{{ __('Unit Price') }}</th>
-                                                        <th width="10%" class="text-right">{{ __('VAT %') }}</th>
+                                                        <th width="10%" class="text-right">{{ __('VAT 10%') }}</th>
                                                         <th width="15%" class="text-right">{{ __('Total Price') }}</th>
                                                     </tr>
                                                     </thead>
@@ -80,12 +80,9 @@
                                                             <td>{!! nl2br(e($item->item_description)) !!}</td>
                                                             <td class="text-center">{{ $item->quantity }}</td>
                                                             <td class="text-right">
-                                                                {{ number_format($item->unit_price, 2) }}</td>
+                                                                {{ number_format($item->unit_price + $item->tax_amount, 2) }}</td>
                                                             <td class="text-right">
-                                                                {{ $item->vat_percentage }}%
-                                                                @if($item->vat_amount > 0)
-                                                                    <br><small>({{ number_format($item->vat_amount, 2) }} BDT)</small>
-                                                                @endif
+                                                                {{ number_format($item->vat_amount, 2) }}
                                                             </td>
                                                             <td class="text-right">
                                                                 {{ number_format($item->total_price, 2) }}</td>

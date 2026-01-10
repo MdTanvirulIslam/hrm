@@ -1351,6 +1351,4 @@ Route::resource('invoice', InvoiceController::class);
 Route::get('invoice/{id}/pdf/{type}', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
 Route::post('invoice/get-sequence', [InvoiceController::class, 'getSequence'])->name('invoice.getSequence');
 Route::post('invoice/get-invoice-number', [InvoiceController::class, 'getInvoiceNumber'])->name('invoice.getInvoiceNumber');
-Route::middleware(['auth', 'XSS'])->group(function () {
 
-});

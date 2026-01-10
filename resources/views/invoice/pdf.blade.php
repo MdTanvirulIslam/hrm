@@ -12,79 +12,101 @@
             box-sizing: border-box;
         }
 
+        @page {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10px;
-            line-height: 1.4;
+            font-size: 9px;
+            line-height: 1.3;
             color: #333;
-            padding: 20px;
-        }
-
-        .invoice-header {
-            margin-bottom: 20px;
-        }
-
-        .invoice-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            /* Space for letterhead:
+               Top: 150px (for header letterhead)
+               Bottom: 100px (for footer letterhead)
+               Left/Right: 30px (for margins)
+            */
+            padding: 150px 30px 100px 30px;
         }
 
         .copy-type {
             text-align: right;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             margin-bottom: 10px;
             color: #666;
         }
 
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .invoice-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
         .invoice-info {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            font-size: 9px;
         }
 
         .invoice-info strong {
             font-weight: bold;
         }
 
+        hr {
+            border: 0;
+            border-top: 1px solid #ddd;
+            margin: 8px 0;
+        }
+
         .bill-to {
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            font-size: 9px;
         }
 
         .bill-to strong {
             font-weight: bold;
         }
 
+        .section-title {
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-top: 8px;
+            margin-bottom: 12px;
         }
 
         table th,
         table td {
             border: 1px solid #ddd;
-            padding: 6px;
-            text-align: left;
-            font-size: 9px;
+            padding: 4px 5px;
+            font-size: 8px;
         }
 
         table th {
             background-color: #f8f9fa;
             font-weight: bold;
+            text-align: left;
         }
 
         .text-center {
-            text-align: center;
+            text-align: center !important;
         }
 
         .text-right {
-            text-align: right;
-        }
-
-        .text-end {
-            text-align: right;
+            text-align: right !important;
         }
 
         .total-row {
@@ -93,65 +115,73 @@
         }
 
         .amount-words {
-            margin-top: 15px;
-            margin-bottom: 15px;
-            font-size: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-size: 9px;
         }
 
         .terms-section {
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin-top: 12px;
+            margin-bottom: 12px;
         }
 
         .terms-section h5 {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .terms-list {
             list-style-type: none;
             padding-left: 0;
+            margin: 0;
         }
 
         .terms-list li {
-            margin-bottom: 5px;
-            padding-left: 15px;
-            text-indent: -15px;
-            font-size: 9px;
+            margin-bottom: 3px;
+            padding-left: 12px;
+            text-indent: -12px;
+            font-size: 8px;
         }
 
         .signature-section {
-            margin-top: 60px;
+            margin-top: 30px;
             text-align: right;
         }
 
         .signature-line {
             display: inline-block;
-            width: 200px;
+            width: 180px;
             border-top: 1px solid #333;
-            margin-top: 50px;
-        }
-
-        hr {
-            border: 0;
-            border-top: 1px solid #ddd;
-            margin: 10px 0;
+            margin-top: 25px;
+            margin-bottom: 3px;
         }
 
         .company-name {
             font-weight: bold;
+            font-size: 9px;
+        }
+
+        /* Prevent page breaks inside important sections */
+        .invoice-info,
+        .bill-to,
+        table,
+        .signature-section {
+            page-break-inside: avoid;
         }
     </style>
 </head>
 
 <body>
+{{-- Copy Type --}}
 <div class="copy-type">{{ $copyType }}</div>
 
+{{-- Invoice Header --}}
 <div class="invoice-header">
     <div class="invoice-title">INVOICE</div>
 </div>
 
+{{-- Invoice Info --}}
 <div class="invoice-info">
     <strong>INVOICE #:</strong> {{ $invoice->invoice_number }}<br>
     <strong>DATE:</strong> {{ date('d F Y', strtotime($invoice->invoice_date)) }}<br>
@@ -162,24 +192,26 @@
 
 <hr>
 
+{{-- Bill To --}}
 <div class="bill-to">
     <strong>BILL TO:</strong><br>
     <strong>{{ $invoice->bill_to_name }}</strong><br>
     {!! nl2br(e($invoice->bill_to_address)) !!}
 </div>
 
-<h5 style="font-size: 11px; font-weight: bold; margin-top: 20px;">Items/Service Details:</h5>
+{{-- Items Table --}}
+<h5 class="section-title">Items/Service Details:</h5>
 
 <table>
     <thead>
     <tr>
-        <th width="4%" class="text-center">SN</th>
-        <th width="18%">Product Name</th>
-        <th width="28%">Product Description</th>
-        <th width="8%" class="text-center">Qty</th>
-        <th width="12%" class="text-right">Unit Price</th>
-        <th width="10%" class="text-right">VAT %</th>
-        <th width="20%" class="text-right">Total Price</th>
+        <th width="5%" class="text-center">{{ __('SN') }}</th>
+        <th width="20%">{{ __('Product Name') }}</th>
+        <th width="30%">{{ __('Product Description') }}</th>
+        <th width="8%" class="text-center">{{ __('Qty') }}</th>
+        <th width="12%" class="text-right">{{ __('Unit Price') }}</th>
+        <th width="10%" class="text-right">{{ __('VAT 10%') }}</th>
+        <th width="15%" class="text-right">{{ __('Total Price') }}</th>
     </tr>
     </thead>
     <tbody>
@@ -188,14 +220,9 @@
             <td class="text-center">{{ $index + 1 }}</td>
             <td>{{ $item->product_name ?? 'N/A' }}</td>
             <td>{!! nl2br(e($item->item_description)) !!}</td>
-            <td class="text-center">{{ number_format($item->quantity, 2) }}</td>
-            <td class="text-right">{{ number_format($item->unit_price, 2) }}</td>
-            <td class="text-right">
-                {{ number_format($item->vat_percentage ?? 0, 2) }}%
-                @if(($item->vat_amount ?? 0) > 0)
-                    <br>({{ number_format($item->vat_amount, 2) }})
-                @endif
-            </td>
+            <td class="text-center">{{ number_format($item->quantity, 0) }}</td>
+            <td class="text-right">{{ number_format($item->unit_price + $item->tax_amount, 2) }}</td>
+            <td class="text-right"> {{ number_format($item->vat_amount, 2) }} </td>
             <td class="text-right">{{ number_format($item->total_price, 2) }}</td>
         </tr>
     @endforeach
@@ -222,10 +249,12 @@
     </tfoot>
 </table>
 
+{{-- Amount in Words --}}
 <div class="amount-words">
     <strong>Amount in word (BDT):</strong> {{ $invoice->amount_in_words }}
 </div>
 
+{{-- Payment Terms --}}
 @if ($invoice->terms->count() > 0)
     <div class="terms-section">
         <h5>Payment Terms & Conditions:</h5>
@@ -237,6 +266,7 @@
     </div>
 @endif
 
+{{-- Signature Section --}}
 <div class="signature-section">
     <p><strong>Authorized Signature</strong></p>
     <div class="signature-line"></div>

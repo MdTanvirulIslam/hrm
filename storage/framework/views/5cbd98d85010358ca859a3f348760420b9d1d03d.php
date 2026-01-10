@@ -11,6 +11,33 @@
 
 <?php $__env->startSection('content'); ?>
     <div class="">
+        <?php if($errors->any()): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">Validation Errors:</h4>
+                <ul>
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if(session('error')): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?php echo e(session('error')); ?>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if(session('success')): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?php echo e(session('success')); ?>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
         <?php echo e(Form::model($invoice, ['route' => ['invoice.update', $invoice->id], 'method' => 'PUT', 'id' => 'invoice-form'])); ?>
 
         <div class="row">
@@ -562,6 +589,35 @@
             setTimeout(() => {
                 generateInvoiceNumber();
             }, 100);
+
+
+        });
+
+        $('#invoice-form').on('submit', function(e) {
+            console.log('Form is being submitted');
+            console.log('Form data:', $(this).serialize());
+
+            // Check if there are any validation errors
+            let hasErrors = false;
+            $('.item-row').each(function() {
+                let productName = $(this).find('.product-name').val();
+                let itemDesc = $(this).find('.item-description').val();
+                let unitPrice = $(this).find('.unit-price').val();
+                let quantity = $(this).find('.quantity').val();
+
+                if (!productName || !itemDesc || !unitPrice || !quantity) {
+                    hasErrors = true;
+                    console.error('Row has missing required fields', {
+                        productName, itemDesc, unitPrice, quantity
+                    });
+                }
+            });
+
+            if (hasErrors) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+                return false;
+            }
         });
     </script>
 <?php $__env->stopPush(); ?>

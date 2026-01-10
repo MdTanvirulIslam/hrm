@@ -87,9 +87,48 @@ class Invoice extends Model
         return "{$companyPrefix}-SDSL-{$datePart}-{$newSequence}";
     }
 
+    /**
+     * Convert number to words with decimal support
+     * Example: 11.58 -> "Eleven Point Fifty Eight Taka Only"
+     *
+     * @param float|int $number
+     * @return string
+     */
     public static function numberToWords($number)
     {
-        $number = (int) $number;
+        // Split number into integer and decimal parts
+        $number = number_format($number, 2, '.', '');
+        $parts = explode('.', $number);
+
+        $integerPart = (int) $parts[0];
+        $decimalPart = isset($parts[1]) ? $parts[1] : '00';
+
+        // Convert integer part to words
+        $integerWords = self::convertNumberToWords($integerPart);
+
+        // Handle decimal part
+        $result = $integerWords;
+
+        if ((int) $decimalPart > 0) {
+            // Convert decimal part to words
+            $decimalWords = self::convertNumberToWords((int) $decimalPart);
+            $result .= ' Point ' . $decimalWords;
+        }
+
+        return $result . ' Taka Only';
+    }
+
+    /**
+     * Helper method to convert a number to words
+     *
+     * @param int $number
+     * @return string
+     */
+    private static function convertNumberToWords($number)
+    {
+        if ($number == 0) {
+            return 'Zero';
+        }
 
         $words = array(
             '0' => '', '1' => 'One', '2' => 'Two', '3' => 'Three', '4' => 'Four',
@@ -110,19 +149,19 @@ class Invoice extends Model
         } elseif ($number < 1000) {
             $hundreds = $words[floor($number / 100)] . ' Hundred';
             $remainder = $number % 100;
-            return $hundreds . ($remainder ? ' ' . self::numberToWords($remainder) : '');
+            return $hundreds . ($remainder ? ' ' . self::convertNumberToWords($remainder) : '');
         } elseif ($number < 100000) {
-            $thousands = self::numberToWords(floor($number / 1000)) . ' Thousand';
+            $thousands = self::convertNumberToWords(floor($number / 1000)) . ' Thousand';
             $remainder = $number % 1000;
-            return $thousands . ($remainder ? ' ' . self::numberToWords($remainder) : '');
+            return $thousands . ($remainder ? ' ' . self::convertNumberToWords($remainder) : '');
         } elseif ($number < 10000000) {
-            $lakhs = self::numberToWords(floor($number / 100000)) . ' Lac';
+            $lakhs = self::convertNumberToWords(floor($number / 100000)) . ' Lac';
             $remainder = $number % 100000;
-            return $lakhs . ($remainder ? ' ' . self::numberToWords($remainder) : '');
+            return $lakhs . ($remainder ? ' ' . self::convertNumberToWords($remainder) : '');
         } else {
-            $crores = self::numberToWords(floor($number / 10000000)) . ' Crore';
+            $crores = self::convertNumberToWords(floor($number / 10000000)) . ' Crore';
             $remainder = $number % 10000000;
-            return $crores . ($remainder ? ' ' . self::numberToWords($remainder) : '');
+            return $crores . ($remainder ? ' ' . self::convertNumberToWords($remainder) : '');
         }
     }
 }

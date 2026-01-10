@@ -9,6 +9,7 @@ use App\Models\InvoiceTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -38,7 +39,7 @@ class InvoiceController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.tax_percentage' => 'required|numeric|min:0|max:100',
             'items.*.vat_percentage' => 'required|numeric|min:0|max:100',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|numeric|min:0.01', // Changed here too
         ]);
 
         try {
@@ -52,7 +53,7 @@ class InvoiceController extends Controller
                 $unitPrice = (float) $item['unit_price'];
                 $taxPercentage = (float) $item['tax_percentage'];
                 $vatPercentage = (float) $item['vat_percentage'];
-                $quantity = (int) $item['quantity'];
+                $quantity = (float) $item['quantity']; // Changed from (int) to (float)
 
                 // Calculate tax amount based on your formula
                 $taxAmount = 0;
@@ -91,10 +92,12 @@ class InvoiceController extends Controller
 
             // Calculate advance payment
             $advancePaid = 0;
-            if ($request->advance_paid_type == 'fixed') {
-                $advancePaid = (float) $request->advance_paid_fixed;
+            $advancePaidType = $request->advance_paid_type ?? 'fixed';
+
+            if ($advancePaidType == 'fixed') {
+                $advancePaid = (float) ($request->advance_paid_fixed ?? 0);
             } else {
-                $advancePercentage = (float) str_replace('%', '', $request->advance_paid_type);
+                $advancePercentage = (float) str_replace('%', '', $advancePaidType);
                 $advancePaid = ($grandTotal * $advancePercentage) / 100;
             }
 
@@ -117,7 +120,7 @@ class InvoiceController extends Controller
                 'net_payable' => $netPayable,
                 'amount_in_words' => Invoice::numberToWords($netPayable),
                 'advance_paid_fixed' => $advancePaid,
-                'advance_paid_type' => $request->advance_paid_type,
+                'advance_paid_type' => $advancePaidType,
                 'created_by' => Auth::id(),
             ]);
 
@@ -126,7 +129,15 @@ class InvoiceController extends Controller
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
                     'row_order' => $index + 1,
-                    ...$itemData
+                    'product_name' => $itemData['product_name'],
+                    'item_description' => $itemData['item_description'],
+                    'unit_price' => $itemData['unit_price'],
+                    'tax_percentage' => $itemData['tax_percentage'],
+                    'tax_amount' => $itemData['tax_amount'],
+                    'vat_percentage' => $itemData['vat_percentage'],
+                    'vat_amount' => $itemData['vat_amount'],
+                    'quantity' => $itemData['quantity'],
+                    'total_price' => $itemData['total_price'],
                 ]);
             }
 
@@ -178,7 +189,7 @@ class InvoiceController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.tax_percentage' => 'required|numeric|min:0|max:100',
             'items.*.vat_percentage' => 'required|numeric|min:0|max:100',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|numeric|min:0.01', // Changed from 'integer|min:1' to 'numeric|min:0.01'
         ]);
 
         try {
@@ -192,7 +203,7 @@ class InvoiceController extends Controller
                 $unitPrice = (float) $item['unit_price'];
                 $taxPercentage = (float) $item['tax_percentage'];
                 $vatPercentage = (float) $item['vat_percentage'];
-                $quantity = (int) $item['quantity'];
+                $quantity = (float) $item['quantity']; // Changed from (int) to (float)
 
                 // Calculate tax amount based on your formula
                 $taxAmount = 0;
@@ -231,10 +242,12 @@ class InvoiceController extends Controller
 
             // Calculate advance payment
             $advancePaid = 0;
-            if ($request->advance_paid_type == 'fixed') {
-                $advancePaid = (float) $request->advance_paid_fixed;
+            $advancePaidType = $request->advance_paid_type ?? 'fixed';
+
+            if ($advancePaidType == 'fixed') {
+                $advancePaid = (float) ($request->advance_paid_fixed ?? 0);
             } else {
-                $advancePercentage = (float) str_replace('%', '', $request->advance_paid_type);
+                $advancePercentage = (float) str_replace('%', '', $advancePaidType);
                 $advancePaid = ($grandTotal * $advancePercentage) / 100;
             }
 
@@ -254,7 +267,7 @@ class InvoiceController extends Controller
                 'net_payable' => $netPayable,
                 'amount_in_words' => Invoice::numberToWords($netPayable),
                 'advance_paid_fixed' => $advancePaid,
-                'advance_paid_type' => $request->advance_paid_type,
+                'advance_paid_type' => $advancePaidType,
             ]);
 
             // Delete existing items and terms
@@ -266,7 +279,15 @@ class InvoiceController extends Controller
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
                     'row_order' => $index + 1,
-                    ...$itemData
+                    'product_name' => $itemData['product_name'],
+                    'item_description' => $itemData['item_description'],
+                    'unit_price' => $itemData['unit_price'],
+                    'tax_percentage' => $itemData['tax_percentage'],
+                    'tax_amount' => $itemData['tax_amount'],
+                    'vat_percentage' => $itemData['vat_percentage'],
+                    'vat_amount' => $itemData['vat_amount'],
+                    'quantity' => $itemData['quantity'],
+                    'total_price' => $itemData['total_price'],
                 ]);
             }
 
@@ -287,11 +308,16 @@ class InvoiceController extends Controller
 
             return redirect()->route('invoice.index')
                 ->with('success', 'Invoice updated successfully.');
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error updating invoice: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error updating invoice: ' . $e->getMessage())
+                ->withInput();
         }
     }
+
+
 
     public function destroy(Invoice $invoice)
     {
@@ -366,6 +392,41 @@ class InvoiceController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ]);
+        }
+    }
+
+    public function pdf($id, $type = 'customer')
+    {
+        try {
+            // Load invoice with relationships
+            $invoice = Invoice::with(['items', 'terms', 'creator'])->findOrFail($id);
+
+            // Set copy type
+            $copyType = strtoupper($type) . ' COPY';
+
+            // Load the PDF view
+            $pdf = Pdf::loadView('invoice.pdf', compact('invoice', 'copyType'));
+
+            // Set paper size and orientation
+            $pdf->setPaper('A4', 'portrait');
+
+            // Set PDF options
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'DejaVu Sans',
+                'dpi' => 150,
+                'defaultPaperSize' => 'A4'
+            ]);
+
+            // Generate filename
+            $filename = 'invoice-' . $invoice->invoice_number . '-' . strtolower($type) . '.pdf';
+
+            // Download the PDF
+            return $pdf->download($filename);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error generating PDF: ' . $e->getMessage());
         }
     }
 }

@@ -12,6 +12,31 @@
 
 @section('content')
     <div class="">
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">Validation Errors:</h4>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         {{ Form::model($invoice, ['route' => ['invoice.update', $invoice->id], 'method' => 'PUT', 'id' => 'invoice-form']) }}
         <div class="row">
             {{-- Invoice Header --}}
@@ -550,6 +575,35 @@
             setTimeout(() => {
                 generateInvoiceNumber();
             }, 100);
+
+
+        });
+
+        $('#invoice-form').on('submit', function(e) {
+            console.log('Form is being submitted');
+            console.log('Form data:', $(this).serialize());
+
+            // Check if there are any validation errors
+            let hasErrors = false;
+            $('.item-row').each(function() {
+                let productName = $(this).find('.product-name').val();
+                let itemDesc = $(this).find('.item-description').val();
+                let unitPrice = $(this).find('.unit-price').val();
+                let quantity = $(this).find('.quantity').val();
+
+                if (!productName || !itemDesc || !unitPrice || !quantity) {
+                    hasErrors = true;
+                    console.error('Row has missing required fields', {
+                        productName, itemDesc, unitPrice, quantity
+                    });
+                }
+            });
+
+            if (hasErrors) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+                return false;
+            }
         });
     </script>
 @endpush
