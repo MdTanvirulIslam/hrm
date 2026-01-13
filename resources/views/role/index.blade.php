@@ -37,6 +37,7 @@
                                 <tr>
                                     <td>{{ $role->name }}</td>
                                     <td style="white-space: inherit">
+
                                         @foreach ($role->permissions()->pluck('name') as $permission)
                                             <span class="badge rounded p-2 m-1 px-3 bg-primary ">
                                                 <a href="#" class="text-white">{{ $permission }}</a>

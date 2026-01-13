@@ -15,7 +15,7 @@ class RoleController extends Controller
         if(\Auth::user()->can('Manage Role'))
         {
             $roles = Role::where('created_by', '=', \Auth::user()->creatorId())->get();
-
+            //dd($roles);
             return view('role.index')->with('roles', $roles);
         }
         else
@@ -30,7 +30,7 @@ class RoleController extends Controller
         if(\Auth::user()->can('Create Role'))
         {
             $user = \Auth::user();
-            if($user->type == 'super admin' || $user->type == 'company')
+            if($user->type == 'admin' || 'super admin' || $user->type == 'company')
             {
                 $permissions = Permission::all()->pluck('name', 'id')->toArray();
             }
@@ -107,7 +107,7 @@ class RoleController extends Controller
         {
 
             $user = \Auth::user();
-            if($user->type == 'super admin' || $user->type == 'company')
+            if($user->type == 'admin' || 'super admin' || $user->type == 'company')
             {
                 $permissions = Permission::all()->pluck('name', 'id')->toArray();
 
