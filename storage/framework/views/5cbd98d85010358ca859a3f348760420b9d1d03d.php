@@ -1,14 +1,13 @@
-@extends('layouts.admin')
+<?php $__env->startSection('page-title'); ?>
+    <?php echo e(__('Edit Invoice')); ?>
 
-@section('page-title')
-    {{ __('Edit Invoice') }}
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Home') }}</a></li>
-    <li class="breadcrumb-item"><a href="{{ route('invoice.index') }}">{{ __('Invoice') }}</a></li>
-    <li class="breadcrumb-item">{{ __('Edit Invoice') }}</li>
-@endsection
+<?php $__env->startSection('breadcrumb'); ?>
+    <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>"><?php echo e(__('Home')); ?></a></li>
+    <li class="breadcrumb-item"><a href="<?php echo e(route('invoice.index')); ?>"><?php echo e(__('Invoice')); ?></a></li>
+    <li class="breadcrumb-item"><?php echo e(__('Edit Invoice')); ?></li>
+<?php $__env->stopSection(); ?>
 
 <style>
     /* Ultra Compact CKEditor */
@@ -155,97 +154,109 @@
     }
 </style>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="">
-        @if ($errors->any())
+        <?php if($errors->any()): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <h4 class="alert-heading">Validation Errors:</h4>
                 <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
+                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <li><?php echo e($error); ?></li>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </ul>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
+                <?php echo e(session('error')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
+                <?php echo e(session('success')); ?>
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        {{ Form::model($invoice, ['route' => ['invoice.update', $invoice->id], 'method' => 'PUT', 'id' => 'invoice-form']) }}
+        <?php echo e(Form::model($invoice, ['route' => ['invoice.update', $invoice->id], 'method' => 'PUT', 'id' => 'invoice-form'])); ?>
+
         <div class="row">
-            {{-- Invoice Header --}}
+            
             <div class="col-md-6">
                 <div class="card em-card">
                     <div class="card-header">
-                        <h5>{{ __('Invoice Details') }}</h5>
+                        <h5><?php echo e(__('Invoice Details')); ?></h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-6">
-                                {!! Form::label('invoice_number', __('Invoice Number'), ['class' => 'form-label']) !!}
+                                <?php echo Form::label('invoice_number', __('Invoice Number'), ['class' => 'form-label']); ?>
+
                                 <span class="text-danger">*</span>
-                                {!! Form::text('invoice_number', null, [
+                                <?php echo Form::text('invoice_number', null, [
                                     'class' => 'form-control',
                                     'readonly' => 'readonly',
-                                ]) !!}
+                                ]); ?>
+
                             </div>
                             <div class="form-group col-md-6">
-                                {!! Form::label('invoice_date', __('Date'), ['class' => 'form-label']) !!}
+                                <?php echo Form::label('invoice_date', __('Date'), ['class' => 'form-label']); ?>
+
                                 <span class="text-danger">*</span>
                                 <input type="date"
                                        name="invoice_date"
                                        class="form-control"
-                                       value="{{ $invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : '' }}"
+                                       value="<?php echo e($invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : ''); ?>"
                                        required>
                             </div>
                             <div class="form-group col-md-12">
-                                {!! Form::label('reference_work_order', __('Reference Work Order No'), ['class' => 'form-label']) !!}
-                                {!! Form::text('reference_work_order', null, [
+                                <?php echo Form::label('reference_work_order', __('Reference Work Order No'), ['class' => 'form-label']); ?>
+
+                                <?php echo Form::text('reference_work_order', null, [
                                     'class' => 'form-control',
                                     'placeholder' => 'WO/M-25-4264',
-                                ]) !!}
+                                ]); ?>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Bill To --}}
+            
             <div class="col-md-6">
                 <div class="card em-card">
                     <div class="card-header">
-                        <h5>{{ __('Bill To') }}</h5>
+                        <h5><?php echo e(__('Bill To')); ?></h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="form-group col-md-12">
-                                {!! Form::label('bill_to_name', __('Company/Client Name'), ['class' => 'form-label']) !!}
+                                <?php echo Form::label('bill_to_name', __('Company/Client Name'), ['class' => 'form-label']); ?>
+
                                 <span class="text-danger">*</span>
-                                {!! Form::text('bill_to_name', null, [
+                                <?php echo Form::text('bill_to_name', null, [
                                     'class' => 'form-control',
                                     'required' => 'required',
-                                ]) !!}
+                                ]); ?>
+
                             </div>
                             <div class="form-group col-md-12">
-                                {!! Form::label('bill_to_address', __('Address'), ['class' => 'form-label']) !!}
+                                <?php echo Form::label('bill_to_address', __('Address'), ['class' => 'form-label']); ?>
+
                                 <span class="text-danger">*</span>
-                                {!! Form::textarea('bill_to_address', null, [
+                                <?php echo Form::textarea('bill_to_address', null, [
                                     'class' => 'form-control',
                                     'required' => 'required',
                                     'rows' => 4,
-                                ]) !!}
+                                ]); ?>
+
                             </div>
                         </div>
                     </div>
@@ -253,18 +264,19 @@
             </div>
         </div>
 
-        {{-- Items/Service Details --}}
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="card em-card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-10">
-                                <h5>{{ __('Items/Service Details') }}</h5>
+                                <h5><?php echo e(__('Items/Service Details')); ?></h5>
                             </div>
                             <div class="col-2 text-end">
                                 <button type="button" class="btn btn-sm btn-primary" id="add-item-row">
-                                    <i class="ti ti-plus"></i> {{ __('Add Row') }}
+                                    <i class="ti ti-plus"></i> <?php echo e(__('Add Row')); ?>
+
                                 </button>
                             </div>
                         </div>
@@ -273,64 +285,64 @@
                         <div class="table-responsive">
                             <table class="table table-bordered" id="items-table">
                                 <thead>
-                                <th width="3%">{{ __('SN') }}</th>
-                                <th width="12%">{{ __('PRODUCT NAME') }}</th>
-                                <th width="18%">{{ __('PRODUCT DESCRIPTION') }}</th>
-                                <th width="8%">{{ __('UNIT PRICE') }}</th>
-                                <th width="7%">{{ __('TAX %') }}</th>
-                                <th width="8%">{{ __('TAX AMOUNT') }}</th>
-                                <th width="7%">{{ __('VAT %') }}</th>
-                                <th width="8%">{{ __('VAT AMOUNT') }}</th>
-                                <th width="6%">{{ __('QTY') }}</th>
-                                <th width="11%">{{ __('TOTAL PRICE WITH VAT & TAX') }}</th>
-                                <th width="3%">{{ __('ACTION') }}</th>
+                                <th width="3%"><?php echo e(__('SN')); ?></th>
+                                <th width="12%"><?php echo e(__('PRODUCT NAME')); ?></th>
+                                <th width="18%"><?php echo e(__('PRODUCT DESCRIPTION')); ?></th>
+                                <th width="8%"><?php echo e(__('UNIT PRICE')); ?></th>
+                                <th width="7%"><?php echo e(__('TAX %')); ?></th>
+                                <th width="8%"><?php echo e(__('TAX AMOUNT')); ?></th>
+                                <th width="7%"><?php echo e(__('VAT %')); ?></th>
+                                <th width="8%"><?php echo e(__('VAT AMOUNT')); ?></th>
+                                <th width="6%"><?php echo e(__('QTY')); ?></th>
+                                <th width="11%"><?php echo e(__('TOTAL PRICE WITH VAT & TAX')); ?></th>
+                                <th width="3%"><?php echo e(__('ACTION')); ?></th>
                                 </thead>
                                 <tbody id="items-body">
-                                @foreach ($invoice->items as $index => $item)
+                                <?php $__currentLoopData = $invoice->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr class="item-row">
-                                        <td class="text-center row-number">{{ $index + 1 }}</td>
+                                        <td class="text-center row-number"><?php echo e($index + 1); ?></td>
                                         <td>
-                                            <input type="text" name="items[{{ $index }}][product_name]"
-                                                   class="form-control product-name" value="{{ $item->product_name }}" required placeholder="Enter product name">
+                                            <input type="text" name="items[<?php echo e($index); ?>][product_name]"
+                                                   class="form-control product-name" value="<?php echo e($item->product_name); ?>" required placeholder="Enter product name">
                                         </td>
                                         <td>
-                                            <textarea name="items[{{ $index }}][item_description]" class="form-control item-description"
-                                                      rows="2" required placeholder="Click to edit description">{{ $item->item_description }}</textarea>
+                                            <textarea name="items[<?php echo e($index); ?>][item_description]" class="form-control item-description"
+                                                      rows="2" required placeholder="Click to edit description"><?php echo e($item->item_description); ?></textarea>
                                         </td>
                                         <td>
-                                            <input type="number" name="items[{{ $index }}][unit_price]"
-                                                   class="form-control unit-price" value="{{ $item->unit_price }}"
+                                            <input type="number" name="items[<?php echo e($index); ?>][unit_price]"
+                                                   class="form-control unit-price" value="<?php echo e($item->unit_price); ?>"
                                                    min="0" step="0.01" required>
                                         </td>
                                         <td>
-                                            <select name="items[{{ $index }}][tax_percentage]" class="form-control tax-percentage">
-                                                <option value="0" {{ $item->tax_percentage == 0 ? 'selected' : '' }}>ITES - 0%</option>
-                                                <option value="5" {{ $item->tax_percentage == 5 ? 'selected' : '' }}>Hardware - 5%</option>
-                                                <option value="15" {{ $item->tax_percentage == 15 ? 'selected' : '' }}>AMC- 15%</option>
+                                            <select name="items[<?php echo e($index); ?>][tax_percentage]" class="form-control tax-percentage">
+                                                <option value="0" <?php echo e($item->tax_percentage == 0 ? 'selected' : ''); ?>>ITES - 0%</option>
+                                                <option value="5" <?php echo e($item->tax_percentage == 5 ? 'selected' : ''); ?>>Hardware - 5%</option>
+                                                <option value="15" <?php echo e($item->tax_percentage == 15 ? 'selected' : ''); ?>>AMC- 15%</option>
                                             </select>
                                         </td>
                                         <td>
                                             <input type="number" class="form-control tax-amount"
-                                                   value="{{ $item->tax_amount }}" readonly>
+                                                   value="<?php echo e($item->tax_amount); ?>" readonly>
                                         </td>
                                         <td>
-                                            <select name="items[{{ $index }}][vat_percentage]" class="form-control vat-percentage">
-                                                <option value="0" {{ $item->vat_percentage == 0 ? 'selected' : '' }}>0%</option>
-                                                <option value="10" {{ $item->vat_percentage == 10 ? 'selected' : '' }}>10%</option>
+                                            <select name="items[<?php echo e($index); ?>][vat_percentage]" class="form-control vat-percentage">
+                                                <option value="0" <?php echo e($item->vat_percentage == 0 ? 'selected' : ''); ?>>0%</option>
+                                                <option value="10" <?php echo e($item->vat_percentage == 10 ? 'selected' : ''); ?>>10%</option>
                                             </select>
                                         </td>
                                         <td>
                                             <input type="number" class="form-control vat-amount"
-                                                   value="{{ $item->vat_amount }}" readonly>
+                                                   value="<?php echo e($item->vat_amount); ?>" readonly>
                                         </td>
                                         <td>
-                                            <input type="number" name="items[{{ $index }}][quantity]"
-                                                   class="form-control quantity" value="{{ $item->quantity }}" min="0"
+                                            <input type="number" name="items[<?php echo e($index); ?>][quantity]"
+                                                   class="form-control quantity" value="<?php echo e($item->quantity); ?>" min="0"
                                                    step="1" required>
                                         </td>
                                         <td>
                                             <input type="number" class="form-control total-price"
-                                                   value="{{ $item->total_price }}" readonly>
+                                                   value="<?php echo e($item->total_price); ?>" readonly>
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-danger remove-item-row">
@@ -338,59 +350,59 @@
                                             </button>
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td colspan="9" class="text-end"><strong>{{ __('Grand Total') }}</strong></td>
+                                    <td colspan="9" class="text-end"><strong><?php echo e(__('Grand Total')); ?></strong></td>
                                     <td>
                                         <input type="number" id="grand_total" class="form-control"
-                                               value="{{ $invoice->grand_total }}" readonly>
+                                               value="<?php echo e($invoice->grand_total); ?>" readonly>
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="9" class="text-end"><strong>{{ __('Advance Paid') }}</strong></td>
+                                    <td colspan="9" class="text-end"><strong><?php echo e(__('Advance Paid')); ?></strong></td>
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <select name="advance_paid_type" id="advance_paid_type" class="form-control">
-                                                    <option value="fixed" {{ $invoice->advance_paid_type == 'fixed' ? 'selected' : '' }}>Fixed Amount</option>
-                                                    <option value="10" {{ $invoice->advance_paid_type == '10' || $invoice->advance_paid_type == '10%' ? 'selected' : '' }}>10%</option>
-                                                    <option value="20" {{ $invoice->advance_paid_type == '20' || $invoice->advance_paid_type == '20%' ? 'selected' : '' }}>20%</option>
-                                                    <option value="30" {{ $invoice->advance_paid_type == '30' || $invoice->advance_paid_type == '30%' ? 'selected' : '' }}>30%</option>
-                                                    <option value="50" {{ $invoice->advance_paid_type == '50' || $invoice->advance_paid_type == '50%' ? 'selected' : '' }}>50%</option>
+                                                    <option value="fixed" <?php echo e($invoice->advance_paid_type == 'fixed' ? 'selected' : ''); ?>>Fixed Amount</option>
+                                                    <option value="10" <?php echo e($invoice->advance_paid_type == '10' || $invoice->advance_paid_type == '10%' ? 'selected' : ''); ?>>10%</option>
+                                                    <option value="20" <?php echo e($invoice->advance_paid_type == '20' || $invoice->advance_paid_type == '20%' ? 'selected' : ''); ?>>20%</option>
+                                                    <option value="30" <?php echo e($invoice->advance_paid_type == '30' || $invoice->advance_paid_type == '30%' ? 'selected' : ''); ?>>30%</option>
+                                                    <option value="50" <?php echo e($invoice->advance_paid_type == '50' || $invoice->advance_paid_type == '50%' ? 'selected' : ''); ?>>50%</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
                                                 <input type="number" name="advance_paid_fixed" id="advance_paid_fixed"
-                                                       class="form-control" value="{{ $invoice->advance_paid_fixed }}" min="0" step="0.01">
+                                                       class="form-control" value="<?php echo e($invoice->advance_paid_fixed); ?>" min="0" step="0.01">
                                             </div>
                                         </div>
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="9" class="text-end"><strong>{{ __('Advance Amount') }}</strong></td>
+                                    <td colspan="9" class="text-end"><strong><?php echo e(__('Advance Amount')); ?></strong></td>
                                     <td>
                                         <input type="number" id="advance_amount" class="form-control"
-                                               value="{{ $invoice->advance_paid }}" readonly>
+                                               value="<?php echo e($invoice->advance_paid); ?>" readonly>
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="9" class="text-end"><strong>{{ __('Rest Payable Amount') }}</strong></td>
+                                    <td colspan="9" class="text-end"><strong><?php echo e(__('Rest Payable Amount')); ?></strong></td>
                                     <td>
                                         <input type="number" id="rest_payable" class="form-control"
-                                               value="{{ $invoice->rest_payable }}" readonly>
+                                               value="<?php echo e($invoice->rest_payable); ?>" readonly>
                                     </td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="9" class="text-end"><strong>{{ __('Net Payable Amount') }}</strong></td>
+                                    <td colspan="9" class="text-end"><strong><?php echo e(__('Net Payable Amount')); ?></strong></td>
                                     <td>
                                         <input type="number" id="net_payable" class="form-control"
-                                               value="{{ $invoice->net_payable }}" readonly>
+                                               value="<?php echo e($invoice->net_payable); ?>" readonly>
                                     </td>
                                     <td></td>
                                 </tr>
@@ -402,18 +414,19 @@
             </div>
         </div>
 
-        {{-- Payment Terms & Conditions --}}
+        
         <div class="row">
             <div class="col-md-12">
                 <div class="card em-card">
                     <div class="card-header">
                         <div class="row">
                             <div class="col-10">
-                                <h5>{{ __('Payment Terms & Conditions') }}</h5>
+                                <h5><?php echo e(__('Payment Terms & Conditions')); ?></h5>
                             </div>
                             <div class="col-2 text-end">
                                 <button type="button" class="btn btn-sm btn-primary" id="add-term-row">
-                                    <i class="ti ti-plus"></i> {{ __('Add Row') }}
+                                    <i class="ti ti-plus"></i> <?php echo e(__('Add Row')); ?>
+
                                 </button>
                             </div>
                         </div>
@@ -423,19 +436,19 @@
                             <table class="table table-bordered" id="terms-table">
                                 <thead>
                                 <tr>
-                                    <th width="5%">{{ __('SN') }}</th>
-                                    <th width="90%">{{ __('Terms & Conditions') }}</th>
-                                    <th width="5%">{{ __('Action') }}</th>
+                                    <th width="5%"><?php echo e(__('SN')); ?></th>
+                                    <th width="90%"><?php echo e(__('Terms & Conditions')); ?></th>
+                                    <th width="5%"><?php echo e(__('Action')); ?></th>
                                 </tr>
                                 </thead>
                                 <tbody id="terms-body">
-                                @foreach ($invoice->terms as $index => $term)
+                                <?php $__currentLoopData = $invoice->terms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr class="term-row">
-                                        <td class="text-center term-number">{{ $index + 1 }}</td>
+                                        <td class="text-center term-number"><?php echo e($index + 1); ?></td>
                                         <td>
-                                            <input type="text" name="terms[{{ $index }}][term_description]"
+                                            <input type="text" name="terms[<?php echo e($index); ?>][term_description]"
                                                    class="form-control term-description"
-                                                   value="{{ $term->term_description }}" placeholder="Enter term description">
+                                                   value="<?php echo e($term->term_description); ?>" placeholder="Enter term description">
                                         </td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-danger remove-term-row">
@@ -443,7 +456,7 @@
                                             </button>
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
@@ -453,13 +466,14 @@
         </div>
 
         <div class="float-end mt-3">
-            <button type="submit" class="btn btn-primary">{{ __('Update Invoice') }}</button>
+            <button type="submit" class="btn btn-primary"><?php echo e(__('Update Invoice')); ?></button>
         </div>
-        {{ Form::close() }}
-    </div>
-@endsection
+        <?php echo e(Form::close()); ?>
 
-@push('script-page')
+    </div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('script-page'); ?>
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 
     <script>
@@ -584,8 +598,8 @@
         }
 
         $(document).ready(function() {
-            let itemIndex = {{ count($invoice->items) }};
-            let termIndex = {{ count($invoice->terms) }};
+            let itemIndex = <?php echo e(count($invoice->items)); ?>;
+            let termIndex = <?php echo e(count($invoice->terms)); ?>;
 
             // Initialize CKEditor for all existing items
             $('.item-description').each(function() {
@@ -882,4 +896,6 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\xampp\htdocs\hrm\resources\views/invoice/edit.blade.php ENDPATH**/ ?>

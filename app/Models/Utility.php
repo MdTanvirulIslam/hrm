@@ -30,7 +30,7 @@ class Utility extends Model
 
 
         $settings = [
-            "site_currency" => "Dollars",
+            "site_currency" => "TK",
             "site_currency_symbol" => "$",
             "site_currency_symbol_position" => "pre",
             "site_date_format" => "M j, Y",

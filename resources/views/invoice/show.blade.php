@@ -77,7 +77,7 @@
                                                         <tr>
                                                             <td class="text-center">{{ $index + 1 }}</td>
                                                             <td>{{ $item->product_name }}</td>
-                                                            <td>{!! nl2br(e($item->item_description)) !!}</td>
+                                                            <td>{{ strip_tags($item->item_description) }}</td>
                                                             <td class="text-center">{{ $item->quantity }}</td>
                                                             <td class="text-right">
                                                                 {{ number_format($item->unit_price + $item->tax_amount, 2) }}</td>

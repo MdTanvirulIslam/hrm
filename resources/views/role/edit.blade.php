@@ -108,7 +108,7 @@
                                 'Report',
                                 'Performance Type',
                                 'BG/PO/PG',
-                                'Manage Invoice'
+                                'Invoice'
                             ];
                             if (Auth::user()->type == 'super admin') {
                                 $modules[] = 'Language';

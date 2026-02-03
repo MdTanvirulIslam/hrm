@@ -10,6 +10,150 @@
     <li class="breadcrumb-item">{{ __('Create Invoice') }}</li>
 @endsection
 
+<style>
+    /* Ultra Compact CKEditor */
+    .ck-editor-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .ck-editor {
+        width: 100% !important;
+        border: 1px solid #ced4da !important;
+        border-radius: 0.375rem !important;
+        transition: all 0.3s ease;
+    }
+
+    /* Minimized state - takes very little space */
+    .ck-editor.minimized {
+        max-height: 50px !important;
+    }
+
+    .ck-editor.minimized .ck-toolbar {
+        display: none !important;
+    }
+
+    .ck-editor.minimized .ck-editor__editable {
+        min-height: 40px !important;
+        max-height: 40px !important;
+        overflow: hidden !important;
+        cursor: pointer;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.25rem !important;
+        padding: 8px 12px !important;
+        background: #f8f9fa;
+        font-size: 14px;
+    }
+
+    .ck-editor.minimized .ck-editor__editable:focus {
+        outline: none;
+        border-color: #86b7fe !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Expanded state - full editor */
+    .ck-editor.expanded {
+        max-height: 250px !important;
+    }
+
+    .ck-editor.expanded .ck-editor__editable {
+        min-height: 150px !important;
+        max-height: 180px !important;
+        overflow-y: auto !important;
+        padding: 12px !important;
+    }
+
+    /* Minimize/Maximize button */
+    .ck-editor-toggle {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-size: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        color: #6c757d;
+        transition: all 0.2s ease;
+    }
+
+    .ck-editor-toggle:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+        color: #495057;
+    }
+
+    .ck-editor-toggle i {
+        font-size: 10px;
+    }
+
+    /* Compact toolbar when expanded */
+    .ck.ck-toolbar {
+        padding: 4px 6px !important;
+        min-height: 36px !important;
+        flex-wrap: wrap !important;
+        background: #f8f9fa !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .ck.ck-button {
+        min-width: 26px !important;
+        min-height: 26px !important;
+        padding: 3px !important;
+    }
+
+    .ck.ck-button__label {
+        font-size: 12px !important;
+    }
+
+    .ck.ck-dropdown__button {
+        min-width: 60px !important;
+    }
+
+    /* Make sure editor doesn't overflow table cell */
+    td .ck-editor {
+        max-width: 100% !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Remove extra spacing in table cells */
+    td {
+        vertical-align: top !important;
+        padding: 8px !important;
+    }
+
+    #items-table td:nth-child(9) {
+        padding: 8px 12px !important;
+        min-width: 80px;
+    }
+
+    .quantity {
+        min-width: 65px !important;
+        padding: 6px 8px !important;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    /* Make table responsive */
+    @media (max-width: 768px) {
+        #items-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .ck-editor-toggle {
+            top: 4px;
+            right: 4px;
+        }
+    }
+</style>
+
 @section('content')
     <div class="">
         {{ Form::open(['route' => 'invoice.store', 'method' => 'post', 'id' => 'invoice-form']) }}
@@ -108,17 +252,17 @@
                             <table class="table table-bordered" id="items-table">
                                 <thead>
                                 <tr>
-                                    <th width="3%">{{ __('SN') }}</th>
-                                    <th width="12%">{{ __('PRODUCT NAME') }}</th>
-                                    <th width="20%">{{ __('PRODUCT DESCRIPTION') }}</th>
+                                    <th width="2%">{{ __('SN') }}</th>
+                                    <th width="10%">{{ __('PRODUCT NAME') }}</th>
+                                    <th width="18%">{{ __('PRODUCT DESCRIPTION') }}</th>
                                     <th width="8%">{{ __('UNIT PRICE') }}</th>
-                                    <th width="8%">{{ __('TAX %') }}</th>
+                                    <th width="7%">{{ __('TAX %') }}</th>
                                     <th width="8%">{{ __('TAX AMOUNT') }}</th>
-                                    <th width="8%">{{ __('VAT %') }}</th>
-                                    <th width="8%">{{ __('VAT AMOUNT') }}</th>
-                                    <th width="10%">{{ __('QTY') }}</th>
-                                    <th width="9%">{{ __('TOTAL PRICE WITH VAT & TAX') }}</th>
-                                    <th width="2%">{{ __('ACTION') }}</th>
+                                    <th width="7%">{{ __('VAT %') }}</th>
+                                    <th width="9%">{{ __('VAT AMOUNT') }}</th>
+                                    <th width="5%">{{ __('QTY') }}</th>
+                                    <th width="13%">{{ __('TOTAL PRICE WITH VAT & TAX') }}</th>
+                                    <th width="3%">{{ __('ACTION') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody id="items-body">
@@ -130,9 +274,8 @@
                                                placeholder="Veeam Data Platform">
                                     </td>
                                     <td>
-                                            <textarea name="items[0][item_description]" class="form-control item-description"
-                                                      rows="2" required
-                                                      placeholder=""></textarea>
+                                        <textarea name="items[0][item_description]" class="form-control item-description"
+                                                  rows="2" required placeholder="Click to edit description"></textarea>
                                     </td>
                                     <td>
                                         <input type="number" name="items[0][unit_price]" class="form-control unit-price"
@@ -186,10 +329,10 @@
                                             <div class="col-md-6">
                                                 <select name="advance_paid_type" id="advance_paid_type" class="form-control">
                                                     <option value="fixed">Fixed Amount</option>
-                                                    <option value="10%">10%</option>
-                                                    <option value="20%">20%</option>
-                                                    <option value="30%">30%</option>
-                                                    <option value="50%">50%</option>
+                                                    <option value="10">10%</option>
+                                                    <option value="20">20%</option>
+                                                    <option value="30">30%</option>
+                                                    <option value="50">50%</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -290,7 +433,7 @@
             </div>
         </div>
 
-        <div class="float-end">
+        <div class="float-end mt-3">
             <button type="submit" class="btn btn-primary">{{ __('Create Invoice') }}</button>
         </div>
         {{ Form::close() }}
@@ -298,10 +441,138 @@
 @endsection
 
 @push('script-page')
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
     <script>
+        // helper function for cKEditor
+        let editors = {};
+        let editorStates = {}; // Track expanded/minimized state
+
+        function initEditor(textarea) {
+            if ($(textarea).data('editor-initialized')) return;
+
+            // Create container
+            const container = document.createElement('div');
+            container.className = 'ck-editor-container';
+            textarea.parentNode.insertBefore(container, textarea);
+            container.appendChild(textarea);
+
+            // Create toggle button
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'ck-editor-toggle';
+            toggleBtn.innerHTML = '<i class="ti ti-chevron-down"></i>';
+            toggleBtn.title = 'Expand/Collapse Editor';
+            container.appendChild(toggleBtn);
+
+            // Initialize CKEditor with compact toolbar
+            ClassicEditor.create(textarea, {
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'underline', 'strikethrough', '|',
+                        'alignment', '|',
+                        'bulletedList', 'numberedList'
+                    ]
+                },
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: 'Heading 1' },
+                        { model: 'heading2', view: 'h2', title: 'Heading 2' },
+                        { model: 'heading3', view: 'h3', title: 'Heading 3' }
+                    ]
+                },
+                alignment: {
+                    options: ['left', 'center', 'right', 'justify']
+                },
+                removePlugins: ['Markdown'],
+                ui: {
+                    viewportOffset: { top: 10 }
+                }
+            }).then(editor => {
+                const textareaName = $(textarea).attr('name');
+                editors[textareaName] = editor;
+                editorStates[textareaName] = 'minimized'; // Start minimized
+                $(textarea).data('editor-initialized', true);
+
+                // Set initial minimized state
+                editor.ui.view.element.classList.add('minimized');
+
+                // Update the textarea when editor content changes
+                editor.model.document.on('change:data', () => {
+                    editor.updateSourceElement();
+                });
+
+                // Toggle button click handler
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentState = editorStates[textareaName];
+
+                    if (currentState === 'minimized') {
+                        // Expand
+                        editor.ui.view.element.classList.remove('minimized');
+                        editor.ui.view.element.classList.add('expanded');
+                        editorStates[textareaName] = 'expanded';
+                        toggleBtn.innerHTML = '<i class="ti ti-chevron-up"></i>';
+                        toggleBtn.title = 'Collapse Editor';
+
+                        // Focus editor
+                        setTimeout(() => {
+                            editor.editing.view.focus();
+                            editor.ui.view.element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 100);
+                    } else {
+                        // Minimize
+                        editor.ui.view.element.classList.remove('expanded');
+                        editor.ui.view.element.classList.add('minimized');
+                        editorStates[textareaName] = 'minimized';
+                        toggleBtn.innerHTML = '<i class="ti ti-chevron-down"></i>';
+                        toggleBtn.title = 'Expand Editor';
+                    }
+                });
+
+                // Click on minimized editor to expand
+                editor.ui.view.element.addEventListener('click', (e) => {
+                    if (editorStates[textareaName] === 'minimized' &&
+                        e.target.closest('.ck-editor__editable')) {
+                        // Expand
+                        editor.ui.view.element.classList.remove('minimized');
+                        editor.ui.view.element.classList.add('expanded');
+                        editorStates[textareaName] = 'expanded';
+                        toggleBtn.innerHTML = '<i class="ti ti-chevron-up"></i>';
+                        toggleBtn.title = 'Collapse Editor';
+                        editor.editing.view.focus();
+                    }
+                });
+
+                // Handle editor destruction when row is removed
+                $(textarea).data('editor-instance', editor);
+
+            }).catch(error => {
+                console.error('CKEditor initialization error:', error);
+                // Fallback to regular textarea if CKEditor fails
+                $(textarea).addClass('form-control').css('height', '40px');
+            });
+        }
+
+        function destroyEditor(name) {
+            if (editors[name]) {
+                editors[name].destroy();
+                delete editors[name];
+                delete editorStates[name];
+            }
+        }
+
         $(document).ready(function() {
             let itemIndex = 1;
             let termIndex = 2;
+
+            // Initialize editor for first row
+            let firstTextarea = document.querySelector('.item-description');
+            if (firstTextarea) {
+                initEditor(firstTextarea);
+            }
 
             // Function to generate invoice number via AJAX
             function generateInvoiceNumber() {
@@ -342,11 +613,11 @@
                 let vatPercentage = parseFloat(row.find('.vat-percentage').val()) || 0;
                 let quantity = parseFloat(row.find('.quantity').val()) || 0;
                 let taxAmount = 0;
+
                 // Calculate tax amount
                 if(taxPercentage == 5){
                     taxAmount = (unitPrice * taxPercentage) / 95;
-                }
-                if(taxPercentage == 15){
+                } else if(taxPercentage == 15){
                     taxAmount = (unitPrice * taxPercentage) / 85;
                 }
 
@@ -408,11 +679,11 @@
                         <td class="text-center row-number">${itemIndex + 1}</td>
                         <td>
                             <input type="text" name="items[${itemIndex}][product_name]"
-                                class="form-control product-name" required>
+                                class="form-control product-name" required placeholder="Enter product name">
                         </td>
                         <td>
                             <textarea name="items[${itemIndex}][item_description]"
-                                class="form-control item-description" rows="2" required></textarea>
+                                class="form-control item-description" rows="2" required placeholder="Click to edit description"></textarea>
                         </td>
                         <td>
                             <input type="number" name="items[${itemIndex}][unit_price]"
@@ -452,6 +723,13 @@
                     </tr>
                 `;
                 $('#items-body').append(newRow);
+
+                // Initialize CKEditor for the new textarea
+                let textarea = $('#items-body tr:last').find('.item-description')[0];
+                setTimeout(() => {
+                    initEditor(textarea);
+                }, 100);
+
                 itemIndex++;
                 updateRowNumbers();
             });
@@ -459,6 +737,13 @@
             // Remove item row
             $(document).on('click', '.remove-item-row', function() {
                 if ($('.item-row').length > 1) {
+                    // Destroy CKEditor instance before removing row
+                    let textarea = $(this).closest('tr').find('.item-description')[0];
+                    if (textarea) {
+                        let editorName = $(textarea).attr('name');
+                        destroyEditor(editorName);
+                    }
+
                     $(this).closest('tr').remove();
                     updateRowNumbers();
                     calculateTotals();
@@ -474,7 +759,7 @@
                         <td class="text-center term-number">${termIndex + 1}</td>
                         <td>
                             <input type="text" name="terms[${termIndex}][term_description]"
-                                class="form-control term-description">
+                                class="form-control term-description" placeholder="Enter term description">
                         </td>
                         <td class="text-center">
                             <button type="button" class="btn btn-sm btn-danger remove-term-row">
@@ -499,7 +784,22 @@
                 $('#items-body .item-row').each(function(index) {
                     $(this).find('.row-number').text(index + 1);
                     $(this).find('.product-name').attr('name', `items[${index}][product_name]`);
-                    $(this).find('.item-description').attr('name', `items[${index}][item_description]`);
+
+                    // Update textarea name
+                    let textarea = $(this).find('.item-description');
+                    let oldName = textarea.attr('name');
+                    textarea.attr('name', `items[${index}][item_description]`);
+
+                    // Update editor reference if exists
+                    if (editors[oldName]) {
+                        editors[`items[${index}][item_description]`] = editors[oldName];
+                        delete editors[oldName];
+                    }
+                    if (editorStates[oldName]) {
+                        editorStates[`items[${index}][item_description]`] = editorStates[oldName];
+                        delete editorStates[oldName];
+                    }
+
                     $(this).find('.unit-price').attr('name', `items[${index}][unit_price]`);
                     $(this).find('.tax-percentage').attr('name', `items[${index}][tax_percentage]`);
                     $(this).find('.vat-percentage').attr('name', `items[${index}][vat_percentage]`);
@@ -521,8 +821,11 @@
             function toggleFixedAmountField() {
                 if ($('#advance_paid_type').val() === 'fixed') {
                     $('#advance_paid_fixed').prop('disabled', false);
+                    $('#advance_paid_fixed').css('opacity', '1');
                 } else {
                     $('#advance_paid_fixed').prop('disabled', true);
+                    $('#advance_paid_fixed').css('opacity', '0.6');
+                    $('#advance_paid_fixed').val('');
                 }
             }
 
@@ -553,6 +856,50 @@
                     generateInvoiceNumber();
                 }
             }, 500);
+
+            // Form validation
+            $('#invoice-form').on('submit', function(e) {
+                // Ensure all CKEditor content is updated to textareas
+                for (let name in editors) {
+                    if (editors[name] && editors[name].updateSourceElement) {
+                        editors[name].updateSourceElement();
+                    }
+                }
+
+                // Basic validation
+                let isValid = true;
+                $('.product-name').each(function() {
+                    if (!$(this).val().trim()) {
+                        alert('Please fill in all product names');
+                        isValid = false;
+                        return false;
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+
+            // Close expanded editors when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.ck-editor').length && !$(e.target).closest('.ck-editor-toggle').length) {
+                    for (let name in editorStates) {
+                        if (editorStates[name] === 'expanded' && editors[name]) {
+                            editors[name].ui.view.element.classList.remove('expanded');
+                            editors[name].ui.view.element.classList.add('minimized');
+                            editorStates[name] = 'minimized';
+
+                            // Update toggle button
+                            const toggleBtn = editors[name].ui.view.element.nextElementSibling;
+                            if (toggleBtn && toggleBtn.classList.contains('ck-editor-toggle')) {
+                                toggleBtn.innerHTML = '<i class="ti ti-chevron-down"></i>';
+                                toggleBtn.title = 'Expand Editor';
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
 @endpush

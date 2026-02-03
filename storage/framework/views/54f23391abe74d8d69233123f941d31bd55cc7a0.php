@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - {{ $invoice->invoice_number }}</title>
+    <title>Invoice - <?php echo e($invoice->invoice_number); ?></title>
     <style>
         * {
             margin: 0;
@@ -173,100 +173,103 @@
 </head>
 
 <body>
-{{-- Copy Type --}}
-<div class="copy-type">{{ $copyType }}</div>
 
-{{-- Invoice Header --}}
+<div class="copy-type"><?php echo e($copyType); ?></div>
+
+
 <div class="invoice-header">
     <div class="invoice-title">INVOICE</div>
 </div>
 
-{{-- Invoice Info --}}
+
 <div class="invoice-info">
-    <strong>INVOICE #:</strong> {{ $invoice->invoice_number }}<br>
-    <strong>DATE:</strong> {{ date('d F Y', strtotime($invoice->invoice_date)) }}<br>
-    @if ($invoice->reference_work_order)
-        <strong>Reference Work Order No:</strong> {{ $invoice->reference_work_order }}
-    @endif
+    <strong>INVOICE #:</strong> <?php echo e($invoice->invoice_number); ?><br>
+    <strong>DATE:</strong> <?php echo e(date('d F Y', strtotime($invoice->invoice_date))); ?><br>
+    <?php if($invoice->reference_work_order): ?>
+        <strong>Reference Work Order No:</strong> <?php echo e($invoice->reference_work_order); ?>
+
+    <?php endif; ?>
 </div>
 
 <hr>
 
-{{-- Bill To --}}
+
 <div class="bill-to">
     <strong>BILL TO:</strong><br>
-    <strong>{{ $invoice->bill_to_name }}</strong><br>
-    {!! nl2br(e($invoice->bill_to_address)) !!}
+    <strong><?php echo e($invoice->bill_to_name); ?></strong><br>
+    <?php echo nl2br(e($invoice->bill_to_address)); ?>
+
 </div>
 
-{{-- Items Table --}}
+
 <h5 class="section-title">Items/Service Details:</h5>
 
 <table>
     <thead>
     <tr>
-        <th width="5%" class="text-center">{{ __('SN') }}</th>
-        <th width="20%">{{ __('Product Name') }}</th>
-        <th width="30%">{{ __('Product Description') }}</th>
-        <th width="8%" class="text-center">{{ __('Qty') }}</th>
-        <th width="12%" class="text-right">{{ __('Unit Price') }}</th>
-        <th width="10%" class="text-right">{{ __('VAT 10%') }}</th>
-        <th width="15%" class="text-right">{{ __('Total Price') }}</th>
+        <th width="5%" class="text-center"><?php echo e(__('SN')); ?></th>
+        <th width="20%"><?php echo e(__('Product Name')); ?></th>
+        <th width="30%"><?php echo e(__('Product Description')); ?></th>
+        <th width="8%" class="text-center"><?php echo e(__('Qty')); ?></th>
+        <th width="12%" class="text-right"><?php echo e(__('Unit Price')); ?></th>
+        <th width="10%" class="text-right"><?php echo e(__('VAT 10%')); ?></th>
+        <th width="15%" class="text-right"><?php echo e(__('Total Price')); ?></th>
     </tr>
     </thead>
     <tbody>
-    @foreach ($invoice->items as $index => $item)
+    <?php $__currentLoopData = $invoice->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <tr>
-            <td class="text-center">{{ $index + 1 }}</td>
-            <td>{{ $item->product_name ?? 'N/A' }}</td>
-            <td>{{ strip_tags($item->item_description) }}</td>
-            <td class="text-center">{{ number_format($item->quantity, 0) }}</td>
-            <td class="text-right">{{ number_format($item->unit_price + $item->tax_amount, 2) }}</td>
-            <td class="text-right"> {{ number_format($item->vat_amount, 2) }} </td>
-            <td class="text-right">{{ number_format($item->total_price, 2) }}</td>
+            <td class="text-center"><?php echo e($index + 1); ?></td>
+            <td><?php echo e($item->product_name ?? 'N/A'); ?></td>
+            <td><?php echo e(strip_tags($item->item_description)); ?></td>
+            <td class="text-center"><?php echo e(number_format($item->quantity, 0)); ?></td>
+            <td class="text-right"><?php echo e(number_format($item->unit_price + $item->tax_amount, 2)); ?></td>
+            <td class="text-right"> <?php echo e(number_format($item->vat_amount, 2)); ?> </td>
+            <td class="text-right"><?php echo e(number_format($item->total_price, 2)); ?></td>
         </tr>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </tbody>
     <tfoot>
     <tr>
         <td colspan="6" class="text-right"><strong>Grand Total</strong></td>
-        <td class="text-right"><strong>{{ number_format($invoice->grand_total, 2) }} BDT</strong></td>
+        <td class="text-right"><strong><?php echo e(number_format($invoice->grand_total, 2)); ?> BDT</strong></td>
     </tr>
-    @if ($invoice->advance_paid > 0)
+    <?php if($invoice->advance_paid > 0): ?>
         <tr>
             <td colspan="6" class="text-right"><strong>Advance Paid</strong></td>
-            <td class="text-right"><strong>{{ number_format($invoice->advance_paid, 2) }} BDT</strong></td>
+            <td class="text-right"><strong><?php echo e(number_format($invoice->advance_paid, 2)); ?> BDT</strong></td>
         </tr>
         <tr>
             <td colspan="6" class="text-right"><strong>Rest Payable Amount</strong></td>
-            <td class="text-right"><strong>{{ number_format($invoice->rest_payable, 2) }} BDT</strong></td>
+            <td class="text-right"><strong><?php echo e(number_format($invoice->rest_payable, 2)); ?> BDT</strong></td>
         </tr>
-    @endif
+    <?php endif; ?>
     <tr class="total-row">
         <td colspan="6" class="text-right"><strong>Net Payable Amount</strong></td>
-        <td class="text-right"><strong>{{ number_format($invoice->net_payable, 2) }} BDT</strong></td>
+        <td class="text-right"><strong><?php echo e(number_format($invoice->net_payable, 2)); ?> BDT</strong></td>
     </tr>
     </tfoot>
 </table>
 
-{{-- Amount in Words --}}
+
 <div class="amount-words">
-    <strong>Amount in word (BDT):</strong> {{ $invoice->amount_in_words }}
+    <strong>Amount in word (BDT):</strong> <?php echo e($invoice->amount_in_words); ?>
+
 </div>
 
-{{-- Payment Terms --}}
-@if ($invoice->terms->count() > 0)
+
+<?php if($invoice->terms->count() > 0): ?>
     <div class="terms-section">
         <h5>Payment Terms & Conditions:</h5>
         <ul class="terms-list">
-            @foreach ($invoice->terms as $term)
-                <li><strong>-</strong> {{ $term->term_description }}</li>
-            @endforeach
+            <?php $__currentLoopData = $invoice->terms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $term): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <li><strong>-</strong> <?php echo e($term->term_description); ?></li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
     </div>
-@endif
+<?php endif; ?>
 
-{{-- Signature Section --}}
+
 <div class="signature-section">
     <p><strong>Authorized Signature</strong></p><br><br><br>
     <div class="signature-line"></div>
@@ -275,3 +278,4 @@
 </body>
 
 </html>
+<?php /**PATH D:\xampp\htdocs\hrm\resources\views/invoice/pdf.blade.php ENDPATH**/ ?>
