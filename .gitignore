@@ -13,3 +13,6 @@ yarn-error.log
 /.idea
 /.vscode
 client_secret*.json
+storage/app/public/uploads/
+storage/framework/sessions/
+storage/framework/views/
