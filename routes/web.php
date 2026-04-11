@@ -80,6 +80,8 @@ use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\PayslipTypeController;
 use App\Http\Controllers\BGPGController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\DriveDocumentController;
+use App\Http\Controllers\TenderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,18 +94,54 @@ use App\Http\Controllers\InvoiceController;
 |
 */
 
-Route::get('/',function (){
-   dd('hello');
+
+
+/*Route::get('/google-auth-init', function () {
+    $client = new \Google\Client();
+    $client->setClientId(env('GOOGLE_DRIVE_CLIENT_ID'));
+    $client->setClientSecret(env('GOOGLE_DRIVE_CLIENT_SECRET')); // ← pulls from .env
+    $client->setRedirectUri('http://127.0.0.1:8000/google-auth-callback');
+    $client->addScope(\Google\Service\Drive::DRIVE);
+    $client->setAccessType('offline');
+    $client->setPrompt('consent');
+    return redirect($client->createAuthUrl());
 });
 
-Route::get('/', function () {
-   //return view('welcome');
+Route::get('/google-auth-callback', function () {
+    $code = request()->get('code');
 
-});
+    if (!$code) {
+        return response()->json(['error' => 'No code received', 'params' => request()->all()]);
+    }
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard.dashboard');
-// })->middleware(['auth'])->name('dashboard');
+    $client = new \Google\Client();
+    $client->setClientId(env('GOOGLE_DRIVE_CLIENT_ID'));
+    $client->setClientSecret(env('GOOGLE_DRIVE_CLIENT_SECRET')); // ← same
+    $client->setRedirectUri('http://127.0.0.1:8000/google-auth-callback');
+
+    $token = $client->fetchAccessTokenWithAuthCode($code);
+
+    if (isset($token['error'])) {
+        return response()->json([
+            'error'       => $token['error'],
+            'description' => $token['error_description'] ?? '',
+        ]);
+    }
+
+    if (!isset($token['refresh_token'])) {
+        return response()->json([
+            'warning' => 'No refresh_token — go to https://myaccount.google.com/permissions, remove the app, then try again.',
+        ]);
+    }
+
+    return response()->json([
+        'SUCCESS'       => 'Copy this refresh_token to your .env file',
+        'refresh_token' => $token['refresh_token'],
+    ]);
+});*/
+
+
+
 
 
 require __DIR__ . '/auth.php';
@@ -1352,3 +1390,94 @@ Route::get('invoice/{id}/pdf/{type}', [InvoiceController::class, 'pdf'])->name('
 Route::post('invoice/get-sequence', [InvoiceController::class, 'getSequence'])->name('invoice.getSequence');
 Route::post('invoice/get-invoice-number', [InvoiceController::class, 'getInvoiceNumber'])->name('invoice.getInvoiceNumber');
 
+Route::resource('drive-documents', App\Http\Controllers\DriveDocumentController::class)->middleware(['auth', 'XSS']);
+
+Route::resource('drive-documents', DriveDocumentController::class)->middleware(['auth', 'XSS']);
+
+Route::get( 'drive-documents-sync-all',  [DriveDocumentController::class, 'syncAll'])->name('drive-documents.sync-all')->middleware(['auth', 'XSS']);
+
+Route::get('drive-documents-download/{id}', [DriveDocumentController::class, 'download'])->name('drive-documents.download')->middleware(['auth', 'XSS']);
+Route::get('drive-documents/{id}/link', [DriveDocumentController::class, 'getLink'])
+    ->name('drive-documents.link')
+    ->middleware(['auth', 'XSS']);
+
+Route::resource('tender', TenderController::class)->middleware(['auth', 'XSS']);
+
+
+
+/*Route::get('/test-drive', function () {
+    try {
+        $disk = \Storage::disk('google');
+
+        // 1. Write file
+        $disk->put('test-connection.txt', 'Google Drive connection works! Time: ' . now());
+
+        // 2. List ALL contents recursively
+        $contents = $disk->listContents('', true)->toArray();
+
+        $files = array_map(fn($f) => [
+            'path' => $f['path'],
+            'type' => $f['type'],
+        ], $contents);
+
+        // 3. Try exists with and without leading slash
+        $exists1 = $disk->exists('test-connection.txt');
+        $exists2 = $disk->exists('/test-connection.txt');
+
+        // 4. Check folder ID from config
+        $folderConfig = config('filesystems.disks.google.folder');
+
+        return response()->json([
+            'status'         => '✅ Google Drive connected!',
+            'folder_config'  => $folderConfig,
+            'exists_no_slash'=> $exists1,
+            'exists_slash'   => $exists2,
+            'all_contents'   => $files,
+            'total_files'    => count($files),
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => '❌ Failed',
+            'error'  => $e->getMessage(),
+            'line'   => $e->getLine(),
+        ]);
+    }
+});
+
+
+Route::get('/debug-drive-link2/{id}', function ($id) {
+    $document = \App\Models\DriveDocument::findOrFail($id);
+
+    $client = new \Google\Client();
+    $client->setClientId(config('filesystems.disks.google.clientId'));
+    $client->setClientSecret(config('filesystems.disks.google.clientSecret'));
+    $client->setAccessType('offline');
+    $token = $client->fetchAccessTokenWithRefreshToken(config('filesystems.disks.google.refreshToken'));
+    $client->setAccessToken($token);
+
+    $service      = new \Google\Service\Drive($client);
+    $rootFolderId = config('filesystems.disks.google.folder') ?: 'root';
+
+    // We know 'test' folder ID from previous debug
+    $testFolderId = '1WUm2-8j8J30ZCzoIWfbt09fTaKQcB-ij';
+
+    // List everything inside 'test' folder
+    $testContents = $service->files->listFiles([
+        'q'      => "'{$testFolderId}' in parents and trashed = false",
+        'fields' => 'files(id, name, mimeType)',
+    ]);
+
+    $testItems = array_map(fn($f) => [
+        'id'       => $f->getId(),
+        'name'     => $f->getName(),
+        'mimeType' => $f->getMimeType(),
+        'slug'     => \Illuminate\Support\Str::slug($f->getName(), '_'),
+    ], $testContents->getFiles());
+
+    return response()->json([
+        'looking_for_subfolder' => 'test_sub_folder',
+        'inside_test_folder'    => $testItems,
+        'test_folder_id'        => $testFolderId,
+    ]);
+})->middleware(['auth']);*/

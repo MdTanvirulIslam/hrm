@@ -82,6 +82,7 @@
                                     'Plan',
                                     'Assets',
                                     'Document',
+                                    'Drive Document',
                                     'Employee Profile',
                                     'Employee Last Login',
                                     'Indicator',
@@ -108,6 +109,7 @@
                                     'Performance Type',
                                     'BG/PO/PG',
                                     'Invoice',
+                                    'Tender',
 
                                 ];
                                 if (Auth::user()->type == 'super admin') {

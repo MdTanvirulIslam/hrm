@@ -200,6 +200,8 @@ return [
         RachidLaasri\LaravelInstaller\Providers\LaravelInstallerServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Obydul\LaraSkrill\LaraSkrillServiceProvider::class,
+
+        App\Providers\GoogleDriveServiceProvider::class,
         /* End */
 
     ],

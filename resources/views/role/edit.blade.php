@@ -84,6 +84,7 @@
                                 'Plan',
                                 'Assets',
                                 'Document',
+                                'Drive Document',
                                 'Employee Profile',
                                 'Employee Last Login',
                                 'Indicator',
@@ -108,7 +109,8 @@
                                 'Report',
                                 'Performance Type',
                                 'BG/PO/PG',
-                                'Invoice'
+                                'Invoice',
+                                'Tender'
                             ];
                             if (Auth::user()->type == 'super admin') {
                                 $modules[] = 'Language';

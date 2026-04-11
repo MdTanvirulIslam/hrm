@@ -510,6 +510,16 @@
                     </li>
                 @endif
 
+                {{-- Tenders --}}
+                @can('Manage Tender')
+                    <li class="dash-item {{ Request::segment(1) == 'tender' ? 'active' : '' }}">
+                        <a href="{{ route('tender.index') }}" class="dash-link">
+                            <span class="dash-micon"><i class="ti ti-file-certificate"></i></span>
+                            <span class="dash-mtext">{{ __('Tenders') }}</span>
+                        </a>
+                    </li>
+                @endcan
+
                 {{-- Assets --}}
                 @can('Manage Assets')
                     <li class="dash-item">
@@ -526,6 +536,16 @@
                         <a href="{{ route('document-upload.index') }}" class="dash-link">
                             <span class="dash-micon"><i class="ti ti-file"></i></span>
                             <span class="dash-mtext">{{ __('Document') }}</span>
+                        </a>
+                    </li>
+                @endcan
+
+                {{-- Document --}}
+                @can('Manage Drive Document')
+                    <li class="dash-item">
+                        <a href="{{ route('drive-documents.index') }}" class="dash-link">
+                            <span class="dash-micon"><i class="ti ti-file"></i></span>
+                            <span class="dash-mtext">Google Drive</span>
                         </a>
                     </li>
                 @endcan

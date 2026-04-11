@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->command('check:bgpg-expiry')->dailyAt('11:00');
+        $schedule->command('tender:send-reminders')->dailyAt('08:00');
     }
 
     /**
